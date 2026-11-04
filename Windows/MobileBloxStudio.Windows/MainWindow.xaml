@@ -22,7 +22,7 @@
                         <TextBlock Text="Δ" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="MOBILEBLOX STUDIO" FontSize="16" FontWeight="Bold" LetterSpacing="1"/>
+                        <TextBlock Text="MOBILEBLOX STUDIO" FontSize="16" FontWeight="Bold"/>
                         <TextBlock Text="WINDOWS WORKSPACE" FontSize="10" Foreground="{StaticResource MutedBrush}"/>
                     </StackPanel>
                 </StackPanel>
