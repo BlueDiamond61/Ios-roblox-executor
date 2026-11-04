@@ -10,8 +10,10 @@ This is a safe iOS rewrite of the **interface and file-workflow idea**, not a po
 - Local script library saved in the app's Documents folder
 - Create, rename, edit, and delete text files
 - Import and export plain-text files with the iOS document picker
-- Search across saved file names
-- Lua-friendly monospaced editor
+- Search and filter the local file browser by Lua and text files
+- Grouped Lua/Text project sections
+- Monospaced editor with a syntax-highlighted Lua preview
+- In-app iOS setup and signing guide
 - iPhone and iPad adaptive layout
 
 ## Open in Xcode
@@ -28,6 +30,7 @@ The repository includes the Swift source files; it does not include a signed IPA
 - `MobileBloxStudio/MobileBloxStudioApp.swift` — app entry point
 - `MobileBloxStudio/ContentView.swift` — library, editor, import/export UI
 - `MobileBloxStudio/ScriptDocument.swift` — document type used for file export
+- `MobileBloxStudio/StudioExtras.swift` — syntax preview and install/setup guide
 
 ## Scope
 
