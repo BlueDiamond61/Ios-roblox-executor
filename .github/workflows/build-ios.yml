@@ -1,0 +1,63 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "MobileBloxStudio/**"
+      - "project.yml"
+      - ".github/workflows/build-ios.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-ipa-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build unsigned iOS IPA
+    runs-on: macos-15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build iOS app
+        run: |
+          xcodebuild \
+            -project MobileBloxStudio.xcodeproj \
+            -scheme MobileBloxStudio \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package IPA archive
+        run: |
+          APP_PATH="build/Build/Products/Release-iphoneos/MobileBloxStudio.app"
+          test -d "$APP_PATH"
+          mkdir -p ipa/Payload
+          cp -R "$APP_PATH" ipa/Payload/MobileBloxStudio.app
+          cd ipa
+          /usr/bin/zip -qry ../MobileBloxStudio-unsigned.ipa Payload
+          cd ..
+          test -s MobileBloxStudio-unsigned.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MobileBloxStudio-unsigned-IPA
+          path: MobileBloxStudio-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
