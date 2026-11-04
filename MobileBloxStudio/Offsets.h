@@ -7,7 +7,7 @@
  * executable patch data, or injection definitions.
  */
 
-#define MOBILEBLOX_TARGET_ROBLOX_VERSION "2745.1338"
+#define MOBILEBLOX_TARGET_ROBLOX_VERSION "2745.1138"
 #define MOBILEBLOX_OFFSETS_PROFILE_NAME "metadata-only"
 #define MOBILEBLOX_OFFSETS_PROFILE_VERIFIED 0
 
