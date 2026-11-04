@@ -14,6 +14,7 @@ This is a safe iOS rewrite of the **interface and file-workflow idea**, not a po
 - Grouped Lua/Text project sections
 - Monospaced editor with a syntax-highlighted Lua preview
 - In-app iOS setup and signing guide
+- Local IPA archive vault: import, list, share, and delete `.ipa` files
 - iPhone and iPad adaptive layout
 
 ## Open in Xcode
@@ -31,7 +32,12 @@ The repository includes the Swift source files; it does not include a signed IPA
 - `MobileBloxStudio/ContentView.swift` — library, editor, import/export UI
 - `MobileBloxStudio/ScriptDocument.swift` — document type used for file export
 - `MobileBloxStudio/StudioExtras.swift` — syntax preview and install/setup guide
+- `MobileBloxStudio/PackageVaultView.swift` — local IPA archive storage and sharing
 
 ## Scope
 
 The editor treats scripts as text. It does not run them in Roblox or attach to the Roblox app.
+
+## IPA archive handling
+
+The Package Vault stores `.ipa` files in the app's local Documents directory and supports sharing or deleting them. It does not unpack or alter app bundles, install apps, inject code, or execute payloads. iOS installation, developer trust, and certificate revocation remain controlled by Apple; the app does not offer an anti-revoke bypass or a restart-based trust workaround.
