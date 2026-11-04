@@ -7,7 +7,7 @@
     "minimumIOSVersion": "16.0"
   },
   "roblox": {
-    "targetVersion": "2745.1338",
+    "targetVersion": "2745.1138",
     "profile": "metadata-only",
     "versionVerified": false,
     "compatibility": "version-label-only"
