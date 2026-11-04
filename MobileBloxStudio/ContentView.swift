@@ -105,6 +105,7 @@ struct ContentView: View {
     @State private var showingDeleteConfirmation = false
     @State private var scriptToDelete: StudioScript?
     @State private var showingInstallGuide = false
+    @State private var showingPackageVault = false
     @State private var fileFilter = "All"
 
     private var projectGroups: [(String, [StudioScript])] {
@@ -181,6 +182,7 @@ struct ContentView: View {
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $showingInstallGuide) { InstallGuideView() }
+            .sheet(isPresented: $showingPackageVault) { PackageVaultView() }
             .sheet(item: selectedScriptBinding) { script in
                 EditorView(script: script, library: library) { updated in
                     selectedID = updated.id
@@ -253,6 +255,15 @@ struct ContentView: View {
                 showingImporter = true
             } label: {
                 Image(systemName: "square.and.arrow.down")
+                    .font(.system(size: 16, weight: .semibold))
+                    .frame(width: 44, height: 44)
+                    .background(StudioStyle.panel, in: RoundedRectangle(cornerRadius: 14))
+            }
+
+            Button {
+                showingPackageVault = true
+            } label: {
+                Image(systemName: "shippingbox")
                     .font(.system(size: 16, weight: .semibold))
                     .frame(width: 44, height: 44)
                     .background(StudioStyle.panel, in: RoundedRectangle(cornerRadius: 14))
