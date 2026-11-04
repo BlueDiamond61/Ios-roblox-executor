@@ -24,7 +24,7 @@ private struct StudioScript: Identifiable, Codable, Hashable {
 }
 
 @MainActor
-final class ScriptLibrary: ObservableObject {
+private final class ScriptLibrary: ObservableObject {
     @Published private(set) var scripts: [StudioScript] = []
     private let folder: URL
 
@@ -107,6 +107,13 @@ struct ContentView: View {
     @State private var showingInstallGuide = false
     @State private var fileFilter = "All"
 
+    private var projectGroups: [(String, [StudioScript])] {
+        let luaFiles = filteredScripts.filter { $0.name.lowercased().hasSuffix(".lua") }
+        let textFiles = filteredScripts.filter { !$0.name.lowercased().hasSuffix(".lua") }
+        return [("LUA PROJECT", luaFiles), ("TEXT PROJECT", textFiles)]
+            .filter { !$0.1.isEmpty }
+    }
+
     private var filteredScripts: [StudioScript] {
         let searched = searchText.isEmpty
             ? library.scripts
@@ -149,9 +156,19 @@ struct ContentView: View {
                         emptyState
                     } else {
                         ScrollView {
-                            LazyVStack(spacing: 10) {
-                                ForEach(filteredScripts) { script in
-                                    scriptRow(script)
+                            LazyVStack(alignment: .leading, spacing: 16) {
+                                ForEach(projectGroups, id: \.0) { group in
+                                    VStack(alignment: .leading, spacing: 9) {
+                                        Text(group.0)
+                                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                            .tracking(1.4)
+                                            .foregroundStyle(StudioStyle.purple)
+                                            .padding(.horizontal, 3)
+
+                                        ForEach(group.1) { script in
+                                            scriptRow(script)
+                                        }
+                                    }
                                 }
                             }
                             .padding(.horizontal, 18)
