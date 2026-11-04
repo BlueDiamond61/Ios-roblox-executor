@@ -31,6 +31,8 @@ struct PayloadManagerView: View {
     @State private var executorName = "Workspace.lua"
     @State private var consoleOutput = "Ready. Scripts are stored locally.\n"
     @State private var isRunning = false
+    @State private var isExecutorExpanded = true
+    @State private var isLoadstringEnabled = false
 
     private let accent = Color(red: 0.68, green: 0.46, blue: 1.0)
     private let background = Color(red: 0.055, green: 0.045, blue: 0.09)
@@ -194,120 +196,221 @@ struct PayloadManagerView: View {
     }
 
     private var executorPanel: some View {
-        VStack(alignment: .leading, spacing: 11) {
-            HStack {
-                HStack(spacing: 8) {
-                    Image(systemName: "terminal.fill").foregroundStyle(accent)
-                    Text("EXECUTOR WORKSPACE")
-                        .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                        .tracking(1.2)
-                        .foregroundStyle(.white)
-                }
-                Spacer()
-                HStack(spacing: 6) {
-                    Circle().fill(isRunning ? Color.orange : Color.green).frame(width: 6, height: 6)
-                    Text(isRunning ? "BUSY" : "LOCAL")
-                        .font(.system(size: 9, weight: .bold, design: .monospaced))
-                        .foregroundStyle(.secondary)
-                }
-            }
+        Group {
+            if isExecutorExpanded {
+                VStack(spacing: 0) {
+                    HStack(spacing: 10) {
+                        Text("Δ")
+                            .font(.system(size: 21, weight: .black, design: .rounded))
+                            .foregroundStyle(.white)
+                            .frame(width: 34, height: 34)
+                            .background(Color(red: 0.20, green: 0.39, blue: 0.78), in: RoundedRectangle(cornerRadius: 9))
 
-            TextField("Script name", text: $executorName)
-                .font(.system(size: 12, weight: .medium, design: .monospaced))
-                .padding(10)
-                .background(background, in: RoundedRectangle(cornerRadius: 9))
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("MOBILEBLOX")
+                                .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                                .tracking(1.5)
+                                .foregroundStyle(.white)
+                            Text("SCRIPT WORKSPACE")
+                                .font(.system(size: 8, weight: .medium, design: .monospaced))
+                                .tracking(1)
+                                .foregroundStyle(.white.opacity(0.52))
+                        }
 
-            ZStack(alignment: .topLeading) {
-                TextEditor(text: $executorSource)
-                    .font(.system(size: 12, design: .monospaced))
-                    .foregroundStyle(.white)
-                    .scrollContentBackground(.hidden)
-                    .padding(5)
-                if executorSource.isEmpty {
-                    Text("-- Write a local Lua/Luau script")
-                        .font(.system(size: 12, design: .monospaced))
-                        .foregroundStyle(.secondary)
+                        Spacer()
+
+                        HStack(spacing: 5) {
+                            Circle()
+                                .fill(Color.green)
+                                .frame(width: 6, height: 6)
+                            Text("LOCAL")
+                                .font(.system(size: 9, weight: .bold, design: .monospaced))
+                                .foregroundStyle(.white.opacity(0.7))
+                        }
+
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
+                                isExecutorExpanded = false
+                            }
+                        } label: {
+                            Image(systemName: "minus")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 30, height: 30)
+                                .background(Color.white.opacity(0.09), in: RoundedRectangle(cornerRadius: 7))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Minimize executor")
+                    }
+                    .padding(12)
+                    .background(Color(red: 0.105, green: 0.105, blue: 0.13))
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "doc.text")
+                                .foregroundStyle(Color(red: 0.40, green: 0.62, blue: 1.0))
+                            TextField("Workspace.lua", text: $executorName)
+                                .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                                .foregroundStyle(.white)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                        }
                         .padding(.horizontal, 10)
-                        .padding(.vertical, 13)
-                        .allowsHitTesting(false)
-                }
-            }
-            .frame(minHeight: 170, maxHeight: 230)
-            .background(background, in: RoundedRectangle(cornerRadius: 11))
-            .overlay(RoundedRectangle(cornerRadius: 11).stroke(accent.opacity(0.25), lineWidth: 1))
+                        .frame(height: 35)
+                        .background(Color(red: 0.075, green: 0.075, blue: 0.095), in: RoundedRectangle(cornerRadius: 7))
 
-            HStack(spacing: 8) {
-                Button {
-                    isRunning = false
-                    consoleOutput += "\n[Studio] Runtime is not connected. Nothing was executed.\n"
-                } label: {
-                    Label("Execute", systemImage: "play.fill")
-                        .font(.system(size: 12, weight: .bold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 11)
-                        .background(accent, in: RoundedRectangle(cornerRadius: 10))
-                        .foregroundStyle(.white)
-                }
-                .buttonStyle(.plain)
-                .disabled(isRunning)
+                        ZStack(alignment: .topLeading) {
+                            TextEditor(text: $executorSource)
+                                .font(.system(size: 12, design: .monospaced))
+                                .foregroundStyle(Color(red: 0.88, green: 0.89, blue: 0.93))
+                                .scrollContentBackground(.hidden)
+                                .padding(5)
 
-                Button {
-                    isRunning = false
-                    consoleOutput += "\n[Studio] Stop requested. No runtime session is active.\n"
-                } label: {
-                    Label("Stop", systemImage: "stop.fill")
-                        .font(.system(size: 12, weight: .semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 11)
-                        .background(background, in: RoundedRectangle(cornerRadius: 10))
-                        .foregroundStyle(.white)
-                }
-                .buttonStyle(.plain)
+                            if executorSource.isEmpty {
+                                Text("-- Paste or write a local Lua/Luau script...")
+                                    .font(.system(size: 12, design: .monospaced))
+                                    .foregroundStyle(.white.opacity(0.35))
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 13)
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                        .frame(minHeight: 145, maxHeight: 205)
+                        .background(Color(red: 0.065, green: 0.065, blue: 0.085), in: RoundedRectangle(cornerRadius: 7))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 7)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        }
 
-                Button {
-                    consoleOutput = "Console cleared.\n"
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 13, weight: .semibold))
-                        .frame(width: 42, height: 40)
-                        .background(background, in: RoundedRectangle(cornerRadius: 10))
-                        .foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
-            }
+                        HStack(spacing: 8) {
+                            Toggle(isOn: $isLoadstringEnabled) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Loadstring")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(.white)
+                                    Text("Local sandbox option")
+                                        .font(.system(size: 8))
+                                        .foregroundStyle(.white.opacity(0.45))
+                                }
+                            }
+                            .toggleStyle(SwitchToggleStyle(tint: Color(red: 0.30, green: 0.52, blue: 0.95)))
+                            .scaleEffect(0.82, anchor: .leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
 
-            VStack(alignment: .leading, spacing: 7) {
+                        HStack(spacing: 7) {
+                            Button {
+                                isRunning = false
+                                consoleOutput += "\n[Studio] Lua runtime is not connected. No script was executed.\n"
+                                if isLoadstringEnabled {
+                                    consoleOutput += "[Studio] Loadstring is a UI preference only until the local sandbox is integrated.\n"
+                                }
+                            } label: {
+                                Label("Execute", systemImage: "play.fill")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 37)
+                                    .background(Color(red: 0.25, green: 0.46, blue: 0.88), in: RoundedRectangle(cornerRadius: 7))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                executorSource = ""
+                            } label: {
+                                Label("Clear", systemImage: "xmark")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 37)
+                                    .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 7))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                let name = executorName.trimmingCharacters(in: .whitespacesAndNewlines)
+                                guard !name.isEmpty else { return }
+                                payloads.insert(LocalPayload(name: name, source: executorSource), at: 0)
+                                persist()
+                                consoleOutput += "\n[Studio] Saved \(name) to the local library.\n"
+                            } label: {
+                                Image(systemName: "square.and.arrow.down")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .frame(width: 39, height: 37)
+                                    .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 7))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Save script to local library")
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text("CONSOLE")
+                                    .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                                    .tracking(1.2)
+                                    .foregroundStyle(Color(red: 0.48, green: 0.66, blue: 1.0))
+                                Spacer()
+                                Button("Clear output") {
+                                    consoleOutput = "Console cleared.\n"
+                                }
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.55))
+                            }
+
+                            ScrollView {
+                                Text(consoleOutput)
+                                    .font(.system(size: 9, design: .monospaced))
+                                    .foregroundStyle(.white.opacity(0.82))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .textSelection(.enabled)
+                            }
+                            .frame(height: 52)
+                            .padding(8)
+                            .background(Color(red: 0.065, green: 0.065, blue: 0.085), in: RoundedRectangle(cornerRadius: 7))
+                        }
+
+                        Text("LOCAL EDITOR • NO ROBLOX PROCESS CONNECTION")
+                            .font(.system(size: 8, weight: .medium, design: .monospaced))
+                            .tracking(0.7)
+                            .foregroundStyle(.white.opacity(0.38))
+                    }
+                    .padding(12)
+                    .background(Color(red: 0.13, green: 0.13, blue: 0.16))
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 11))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 11)
+                        .stroke(Color.white.opacity(0.10), lineWidth: 1)
+                }
+                .shadow(color: .black.opacity(0.25), radius: 14, y: 7)
+                .padding(.horizontal, 14)
+            } else {
                 HStack {
-                    Text("CONSOLE")
-                        .font(.system(size: 9, weight: .bold, design: .monospaced))
-                        .tracking(1.2)
-                        .foregroundStyle(accent)
+                    Button {
+                        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
+                            isExecutorExpanded = true
+                        }
+                    } label: {
+                        HStack(spacing: 9) {
+                            Text("Δ")
+                                .font(.system(size: 18, weight: .black, design: .rounded))
+                            Text("OPEN MOBILEBLOX")
+                                .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                                .tracking(1)
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 15)
+                        .frame(height: 45)
+                        .background(Color(red: 0.16, green: 0.18, blue: 0.25), in: RoundedRectangle(cornerRadius: 12))
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(red: 0.30, green: 0.48, blue: 0.82), lineWidth: 1.2))
+                    }
+                    .buttonStyle(.plain)
                     Spacer()
-                    Text("OUTPUT")
-                        .font(.system(size: 9, weight: .medium, design: .monospaced))
-                        .foregroundStyle(.secondary)
                 }
-                ScrollView {
-                    Text(consoleOutput)
-                        .font(.system(size: 10, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.85))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled)
-                }
-                .frame(height: 62)
-                .padding(9)
-                .background(background, in: RoundedRectangle(cornerRadius: 9))
+                .padding(.horizontal, 14)
             }
-
-            Text("UI preview only • A sandboxed Lua runtime must be added before scripts can execute.")
-                .font(.system(size: 9, weight: .medium))
-                .foregroundStyle(.secondary)
         }
-        .padding(13)
-        .background(panel, in: RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal, 14)
     }
 
     private var editorSheet: some View {
