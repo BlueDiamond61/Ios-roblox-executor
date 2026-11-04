@@ -241,7 +241,7 @@ struct PayloadManagerView: View {
             HStack(spacing: 8) {
                 Button {
                     isRunning = false
-                    consoleOutput += "\\n[Studio] Runtime is not connected. Nothing was executed.\\n"
+                    consoleOutput += "\n[Studio] Runtime is not connected. Nothing was executed.\n"
                 } label: {
                     Label("Execute", systemImage: "play.fill")
                         .font(.system(size: 12, weight: .bold))
@@ -255,7 +255,7 @@ struct PayloadManagerView: View {
 
                 Button {
                     isRunning = false
-                    consoleOutput += "\\n[Studio] Stop requested. No runtime session is active.\\n"
+                    consoleOutput += "\n[Studio] Stop requested. No runtime session is active.\n"
                 } label: {
                     Label("Stop", systemImage: "stop.fill")
                         .font(.system(size: 12, weight: .semibold))
@@ -267,7 +267,7 @@ struct PayloadManagerView: View {
                 .buttonStyle(.plain)
 
                 Button {
-                    consoleOutput = "Console cleared.\\n"
+                    consoleOutput = "Console cleared.\n"
                 } label: {
                     Image(systemName: "trash")
                         .font(.system(size: 13, weight: .semibold))
