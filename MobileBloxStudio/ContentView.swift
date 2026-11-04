@@ -526,6 +526,9 @@ private struct EditorView: View {
                 contentType: .plainText,
                 defaultFilename: script.name
             ) { _ in }
+            .onChange(of: script) { changedScript in
+                library.update(changedScript)
+            }
         }
         .tint(StudioStyle.purple)
     }
