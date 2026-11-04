@@ -104,10 +104,22 @@ struct ContentView: View {
     @State private var showingExporter = false
     @State private var showingDeleteConfirmation = false
     @State private var scriptToDelete: StudioScript?
+    @State private var showingInstallGuide = false
+    @State private var fileFilter = "All"
 
     private var filteredScripts: [StudioScript] {
-        guard !searchText.isEmpty else { return library.scripts }
-        return library.scripts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        let searched = searchText.isEmpty
+            ? library.scripts
+            : library.scripts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+
+        switch fileFilter {
+        case "Lua":
+            return searched.filter { $0.name.lowercased().hasSuffix(".lua") }
+        case "Text":
+            return searched.filter { !$0.name.lowercased().hasSuffix(".lua") }
+        default:
+            return searched
+        }
     }
 
     var body: some View {
@@ -131,6 +143,7 @@ struct ContentView: View {
                     .padding(.top, 20)
 
                     libraryHeader
+                    fileBrowserFilters
 
                     if filteredScripts.isEmpty {
                         emptyState
@@ -150,6 +163,7 @@ struct ContentView: View {
                 }
             }
             .navigationBarHidden(true)
+            .sheet(isPresented: $showingInstallGuide) { InstallGuideView() }
             .sheet(item: selectedScriptBinding) { script in
                 EditorView(script: script, library: library) { updated in
                     selectedID = updated.id
@@ -228,6 +242,15 @@ struct ContentView: View {
             }
 
             Button {
+                showingInstallGuide = true
+            } label: {
+                Image(systemName: "iphone.and.arrow.forward")
+                    .font(.system(size: 16, weight: .semibold))
+                    .frame(width: 44, height: 44)
+                    .background(StudioStyle.panel, in: RoundedRectangle(cornerRadius: 14))
+            }
+
+            Button {
                 newName = "Untitled.lua"
                 showingNewName = true
             } label: {
@@ -255,6 +278,27 @@ struct ContentView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 25)
+        .padding(.bottom, 12)
+    }
+
+    private var fileBrowserFilters: some View {
+        HStack(spacing: 8) {
+            ForEach(["All", "Lua", "Text"], id: \.self) { filter in
+                Button {
+                    fileFilter = filter
+                } label: {
+                    Text(filter)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(fileFilter == filter ? .white : StudioStyle.muted)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(fileFilter == filter ? StudioStyle.purple.opacity(0.8) : StudioStyle.panel, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 20)
         .padding(.bottom, 12)
     }
 
@@ -404,10 +448,7 @@ private struct EditorView: View {
                         .padding(.horizontal, 14)
                         .padding(.bottom, 10)
 
-                    TextEditor(text: $script.contents)
-                        .font(.system(size: 13, weight: .regular, design: .monospaced))
-                        .scrollContentBackground(.hidden)
-                        .foregroundStyle(Color(red: 0.88, green: 0.85, blue: 0.94))
+                    EditorCodeSurface(contents: $script.contents)
                         .padding(8)
                         .background(StudioStyle.panel, in: RoundedRectangle(cornerRadius: 14))
                         .padding(.horizontal, 12)
