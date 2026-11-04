@@ -1,0 +1,28 @@
+name: MobileBloxStudio
+options:
+  bundleIdPrefix: com.bluediamond
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+targets:
+  MobileBloxStudio:
+    type: application
+    platform: iOS
+    sources:
+      - path: MobileBloxStudio
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bluediamond.mobilebloxstudio
+        PRODUCT_NAME: MobileBloxStudio
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: MobileBlox Studio
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGNING_ALLOWED: NO
+        SWIFT_EMIT_LOC_STRINGS: YES
