@@ -15,6 +15,9 @@ targets:
     platform: iOS
     sources:
       - path: MobileBloxStudio
+    dependencies:
+      - target: MobileBloxStudioKit
+        embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.bluediamond.mobilebloxstudio
@@ -24,3 +27,15 @@ targets:
         CODE_SIGN_STYLE: Manual
         CODE_SIGNING_ALLOWED: NO
         SWIFT_EMIT_LOC_STRINGS: YES
+  MobileBloxStudioKit:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MobileBloxStudioKit/Sources/MobileBloxStudioKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bluediamond.mobilebloxstudio.kit
+        PRODUCT_NAME: MobileBloxStudioKit
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+        SKIP_INSTALL: YES
