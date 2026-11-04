@@ -72,12 +72,18 @@ struct PayloadManagerView: View {
                     .padding(.horizontal)
 
                     if visiblePayloads.isEmpty {
-                        ContentUnavailableView(
-                            searchText.isEmpty ? "No local files" : "No matching files",
-                            systemImage: "doc.text",
-                            description: Text("Create a Luau file or import a .lua or .txt file.")
-                        )
-                        .foregroundStyle(.white)
+                        VStack(spacing: 10) {
+                            Image(systemName: "doc.text")
+                                .font(.system(size: 34, weight: .light))
+                                .foregroundStyle(accent)
+                            Text(searchText.isEmpty ? "No local files" : "No matching files")
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundStyle(.white)
+                            Text("Create a Luau file or import a .lua or .txt file.")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
                         List {
                             ForEach(visiblePayloads) { item in
