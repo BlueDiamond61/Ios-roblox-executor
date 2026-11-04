@@ -19,10 +19,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.bluediamond.mobilebloxstudio
         PRODUCT_NAME: MobileBloxStudio
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: MobileBlox Studio
-        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_FILE: MobileBloxStudio/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
         CODE_SIGN_STYLE: Manual
         CODE_SIGNING_ALLOWED: NO
         SWIFT_EMIT_LOC_STRINGS: YES
