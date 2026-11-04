@@ -8,7 +8,7 @@
 <style>
 :root{color-scheme:dark;--bg:#0e0a18;--panel:#191328;--purple:#a875ff;--muted:#b9afc9}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#39205e 0,transparent 55%),var(--bg);color:#fff;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;display:grid;place-items:center;padding:24px}
-main{width:min(100%,620px)}.brand{color:var(--purple);font-size:12px;font-weight:800;letter-spacing:.22em}.hero{padding:34px 0 24px}h1{font-size:clamp(38px,8vw,58px);line-height:1.02;margin:12px 0}.sub{color:var(--muted);line-height:1.65;font-size:15px}.card{background:linear-gradient(145deg,#211832,#151020);border:1px solid #ffffff14;border-radius:22px;padding:22px;margin:14px 0}.status{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;color:#ffd28a;font-weight:800}.dot{width:7px;height:7px;border-radius:50%;background:#e5a84b}.btn{display:flex;justify-content:center;align-items:center;text-decoration:none;color:white;background:var(--purple);font-weight:750;border-radius:13px;padding:15px;margin-top:16px}.btn.secondary{background:#302443;border:1px solid #ffffff17}.muted{color:var(--muted);font-size:13px;line-height:1.6}h2{font-size:18px;margin:0 0 8px}footer{color:#8f849f;font-size:12px;text-align:center;padding:24px 0}a.inline{color:#c8aaff}
+main{width:min(100%,620px)}.brand{color:var(--purple);font-size:12px;font-weight:800;letter-spacing:.22em}.hero{padding:34px 0 24px}h1{font-size:clamp(38px,8vw,58px);line-height:1.02;margin:12px 0}.sub{color:var(--muted);line-height:1.65;font-size:15px}.card{background:linear-gradient(145deg,#211832,#151020);border:1px solid #ffffff14;border-radius:22px;padding:22px;margin:14px 0}.status{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;color:#ffd28a;font-weight:800}.dot{width:7px;height:7px;border-radius:50%;background:#e5a84b}.btn{display:flex;justify-content:center;align-items:center;text-decoration:none;color:white;background:var(--purple);font-weight:750;border-radius:13px;padding:15px;margin-top:16px}.btn.secondary{background:#302443;border:1px solid #ffffff17}.muted{color:var(--muted);font-size:13px;line-height:1.6}h2{font-size:18px;margin:0 0 8px}footer{color:#8f849f;font-size:12px;text-align:center;padding:24px 0}a.inline{color:#c8aaff}.release-meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.pill{font-size:11px;color:#d9c8f5;background:#302443;border:1px solid #ffffff18;border-radius:999px;padding:6px 10px}.asset{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #ffffff14}.asset-name{font-size:13px;overflow-wrap:anywhere}.asset-size{font-size:11px;color:var(--muted);white-space:nowrap}.asset a{color:#d5baff;font-size:12px;font-weight:750;text-decoration:none;white-space:nowrap}.release-notes{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted);font-size:13px;line-height:1.6;margin-top:14px}.empty{color:var(--muted);font-size:13px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -18,11 +18,15 @@ main{width:min(100%,620px)}.brand{color:var(--purple);font-size:12px;font-weight
     <h1>MobileBlox<br>iOS</h1>
     <p class="sub">The iOS companion project for local script editing and IPA file management. Check release availability and signing information below. This is not a Roblox game executor: it does not inject code into Roblox or run scripts inside the game.</p>
   </section>
-  <section class="card">
-    <div class="status"><span class="dot"></span> NO SIGNED IOS BUILD PUBLISHED</div>
-    <h2 style="margin-top:14px">iOS app download</h2>
-    <p class="muted">There is not a signed IPA release available yet. When a legitimate iOS build is published, its download will appear in GitHub Releases.</p>
-    <a class="btn" href="https://github.com/BlueDiamond61/Ios-roblox-executor/releases/latest">View GitHub Releases</a>
+  <section class="card" id="latest-release">
+    <div class="status" id="release-status"><span class="dot" id="release-dot"></span><span id="release-state">CHECKING LATEST RELEASE</span></div>
+    <h2 style="margin-top:14px">Latest iOS release</h2>
+    <p class="muted" id="release-summary">Checking GitHub Releases for the latest published build…</p>
+    <div class="release-meta" id="release-meta"></div>
+    <div id="release-assets"></div>
+    <div class="release-notes" id="release-notes"></div>
+    <p class="empty" id="release-empty" hidden></p>
+    <a class="btn" id="release-page" href="https://github.com/BlueDiamond61/Ios-roblox-executor/releases/latest">Open GitHub Releases</a>
   </section>
   <section class="card">
     <h2>Installation profile</h2>
@@ -31,5 +35,88 @@ main{width:min(100%,620px)}.brand{color:var(--purple);font-size:12px;font-weight
   </section>
   <footer>MobileBlox iOS · Community project · iOS installation and signing remain controlled by Apple.</footer>
 </main>
+<script>
+(async function loadLatestRelease() {
+  const api = "https://api.github.com/repos/BlueDiamond61/Ios-roblox-executor/releases/latest";
+  const state = document.getElementById("release-state");
+  const dot = document.getElementById("release-dot");
+  const summary = document.getElementById("release-summary");
+  const meta = document.getElementById("release-meta");
+  const assetsBox = document.getElementById("release-assets");
+  const notes = document.getElementById("release-notes");
+  const empty = document.getElementById("release-empty");
+  const pageLink = document.getElementById("release-page");
+
+  const formatSize = bytes => {
+    if (!Number.isFinite(bytes) || bytes <= 0) return "Size unavailable";
+    const units = ["B", "KB", "MB", "GB"];
+    let size = bytes, unit = 0;
+    while (size >= 1024 && unit < units.length - 1) { size /= 1024; unit++; }
+    return size.toFixed(unit === 0 ? 0 : 1) + " " + units[unit];
+  };
+  const addPill = value => {
+    const pill = document.createElement("span");
+    pill.className = "pill";
+    pill.textContent = value;
+    meta.appendChild(pill);
+  };
+
+  try {
+    const response = await fetch(api, { headers: { "Accept": "application/vnd.github+json" } });
+    if (response.status === 404) {
+      state.textContent = "NO RELEASE PUBLISHED YET";
+      summary.textContent = "There is no published GitHub release yet. Once a release is published, its version, notes, and attached files will appear here automatically.";
+      empty.hidden = false;
+      empty.textContent = "No release files are available.";
+      return;
+    }
+    if (!response.ok) throw new Error("GitHub release service returned " + response.status);
+    const release = await response.json();
+
+    state.textContent = release.prerelease ? "LATEST PRE-RELEASE" : "LATEST RELEASE AVAILABLE";
+    dot.style.background = "#9ee6b0";
+    summary.textContent = release.name || release.tag_name || "Latest published release";
+    pageLink.href = release.html_url || "https://github.com/BlueDiamond61/Ios-roblox-executor/releases/latest";
+    addPill("Version " + (release.tag_name || "Unspecified"));
+    if (release.published_at) addPill("Published " + new Date(release.published_at).toLocaleDateString());
+
+    const assets = Array.isArray(release.assets) ? release.assets : [];
+    if (assets.length) {
+      assets.forEach(asset => {
+        const row = document.createElement("div");
+        row.className = "asset";
+        const info = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "asset-name";
+        name.textContent = asset.name;
+        const size = document.createElement("div");
+        size.className = "asset-size";
+        size.textContent = formatSize(asset.size);
+        info.append(name, size);
+        const link = document.createElement("a");
+        link.href = asset.browser_download_url;
+        link.textContent = "Download";
+        link.rel = "noopener noreferrer";
+        row.append(info, link);
+        assetsBox.appendChild(row);
+      });
+    } else {
+      empty.hidden = false;
+      empty.textContent = "This release has no attached download files yet. Check the release page for details.";
+    }
+
+    if (release.body) {
+      notes.textContent = "Release notes\n" + release.body.slice(0, 5000);
+    } else {
+      notes.textContent = "No release notes were provided.";
+    }
+  } catch (error) {
+    state.textContent = "RELEASE STATUS UNAVAILABLE";
+    summary.textContent = "The latest release could not be loaded automatically. You can still open GitHub Releases to check manually.";
+    empty.hidden = false;
+    empty.textContent = error.message;
+  }
+})();
+</script>
 </body>
 </html>
