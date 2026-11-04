@@ -41,3 +41,16 @@ The editor treats scripts as text. It does not run them in Roblox or attach to t
 ## IPA archive handling
 
 The Package Vault stores `.ipa` files in the app's local Documents directory and supports sharing or deleting them. It does not unpack or alter app bundles, install apps, inject code, or execute payloads. iOS installation, developer trust, and certificate revocation remain controlled by Apple; the app does not offer an anti-revoke bypass or a restart-based trust workaround.
+
+## GitHub Pages download site
+
+A static download/status page is included at `docs/index.html`. The GitHub Actions workflow at `.github/workflows/pages.yml` deploys the `docs/` directory when changes reach `main`.
+
+To publish it:
+1. Merge this branch's pull request into `main`.
+2. In **Settings → Pages**, set the build and deployment source to **GitHub Actions**.
+3. Wait for the **Deploy GitHub Pages** workflow to finish.
+
+Expected site address: https://bluediamond61.github.io/Ios-roblox-executor/
+
+The page currently links to GitHub Releases and clearly states that no signed IPA or installation profile is published. It does not distribute a configuration profile or offer certificate-revocation bypasses.
