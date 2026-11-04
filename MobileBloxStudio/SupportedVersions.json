@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "app": {
+    "bundleIdentifier": "com.bluediamond.mobilebloxstudio",
+    "shortVersion": "1.0.0",
+    "buildVersion": "1",
+    "minimumIOSVersion": "16.0"
+  },
+  "roblox": {
+    "targetVersion": "2745.1338",
+    "profile": "metadata-only",
+    "versionVerified": false,
+    "compatibility": "version-label-only"
+  },
+  "notes": [
+    "Roblox target version is informational metadata.",
+    "No process memory addresses or executable modification data are included."
+  ]
+}
